@@ -29,10 +29,21 @@ void reverseDelay::prepareToPlay(float inSampleRate){
     smoothedFeedback.reset(inSampleRate, 0.01f);
     smoothedWindowSize.reset(inSampleRate, 0.001f);
     smoothedDryWet.reset(0.01f);
+    smoothedVolumeRamp.reset(0.001f);
     
 }
 
-void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
+float reverseDelay::hannWindow(int sizeInSamples, int currentSample){
+    
+    float output = 0.f;
+    
+    output = 0.5 * (1-cos((2*(M_PI)) * currentSample/sizeInSamples));
+    
+    return output;
+
+}
+
+void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying){
     
     
     int num_samples = inBuffer.getNumSamples();
@@ -50,6 +61,9 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
     
     for(int i = 0; i < num_samples; i++){
         
+        // so beast
+        float curve = hannWindow(smoothed_window_size, (beginhead - revhead));
+        
         //
         float input_left = in_channel_left[i];
         float input_right = in_channel_right[i];
@@ -61,8 +75,8 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
         //
         // this is writing the reverse to be read in reverse ie forwards
         // needs to be fixed
-        circular_channel_left[writehead] = input_left + (feedbackLeft * smoothedFeedback.getNextValue());
-        circular_channel_right[writehead] = input_right + (feedbackRight * smoothedFeedback.getNextValue());
+        circular_channel_left[writehead] = input_left + (writeFeedbackLeft);
+        circular_channel_right[writehead] = input_right + (writeFeedbackRight);
         
         //
         float wet_amount = smoothedDryWet.getNextValue();
@@ -74,15 +88,15 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
             //in_channel_right[i] = input_right;
             
             // see if this doesn't cut of the delay signal
-            in_channel_left[i] = input_left + (feedbackLeft * smoothedFeedback.getNextValue());
-            in_channel_right[i] = input_right + (feedbackRight * smoothedFeedback.getNextValue());
+            in_channel_left[i] = input_left + (feedbackLeft);
+            in_channel_right[i] = input_right + (feedbackRight);
         }
         // after the buffer gets initialized for the windowSize
         // create an if statement that uses the markerhead and reverse to that point.
         
         // once the window has been filled up by the writehead
         // initializes the sequence to start reversing what was written
-        if(windowCounter >= smoothed_window_size){
+        if(windowCounter == smoothed_window_size){
             beginhead = writehead;
             endhead = writehead - smoothed_window_size;
             if(endhead < 0){
@@ -93,19 +107,30 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
         }
         //intializes the reverse window
         if(windowComplete == true){
+            
+            
+            
+            int feedhead = writehead-smoothed_window_size;
             //
             float reverse_out_left = circular_channel_left[revhead];
             float reverse_out_right = circular_channel_right[revhead];
             
+            float feedback_out_left = circular_channel_left[feedhead];
+            float feedback_out_right = circular_channel_right[feedhead];
+            
             float feedback_amount = smoothedFeedback.getNextValue();
             
-            //
+            // this feedback is for writing
+            writeFeedbackLeft = feedback_out_left * feedback_amount;
+            writeFeedbackRight = feedback_out_right * feedback_amount;
+            
+            // this is for plauing while the delay is active
             feedbackLeft = reverse_out_left * feedback_amount;
             feedbackRight = reverse_out_right * feedback_amount;
             
             //
-            in_channel_left[i] = (input_left * dry_amount) + (reverse_out_left * wet_amount);
-            in_channel_right[i] = (input_right * dry_amount) + (reverse_out_left * wet_amount);
+            in_channel_left[i] = ((input_left * dry_amount) + ((reverse_out_left * curve) * wet_amount) + feedbackLeft);
+            in_channel_right[i] = ((input_right * dry_amount) + ((reverse_out_right * curve) * wet_amount) + feedbackRight);
             
             //
             revhead--;
@@ -131,10 +156,12 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
     
 }
 
-void reverseDelay::setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent){
+void reverseDelay::setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent, bool timeSync){
     
     smoothedWindowSize.setTargetValue(inWindowSize);
     smoothedFeedback.setTargetValue(inFeedbackPercent);
     smoothedDryWet.setTargetValue(inDryWetPercent);
+    
+    sync = timeSync;
     
 }

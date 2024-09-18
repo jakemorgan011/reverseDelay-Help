@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "reverseDelay.h"
+#include "tempoSyncReverseDelay.h"
 
 
 //==============================================================================
@@ -63,10 +64,15 @@ public:
 private:
     
     reverseDelay reverseDelay;
+    tempoSyncReverseDelay tempoSyncReverseDelay;
+    
+    juce::AudioPlayHead::CurrentPositionInfo playhead;
     
     std::atomic<float>* windowSize = nullptr;
+    std::atomic<float>* syncedWindowSize = nullptr;
     std::atomic<float>* feedback = nullptr;
     std::atomic<float>* dryWet = nullptr;
+    std::atomic<float>* tempoSync = nullptr;
     
     juce::LinearSmoothedValue<float> smoothedWindowSize;
     juce::LinearSmoothedValue<float> smoothedFeedback;

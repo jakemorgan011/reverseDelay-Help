@@ -29,6 +29,10 @@ private:
     //custom look and feel
     customLookAndFeel customLookAndfeel;
     
+    //button
+    juce::ToggleButton tempoSyncButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> tempoSyncButtonAttachment;
+    
     //slider
     //
     juce::Slider windowSizeSlider;

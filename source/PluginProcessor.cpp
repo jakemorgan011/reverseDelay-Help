@@ -24,8 +24,10 @@ AwesomePartyAudioProcessor::AwesomePartyAudioProcessor()
 {
     _constructValueTreeState();
     windowSize = ValueTreeState->getRawParameterValue("windowSize");
+    syncedWindowSize = ValueTreeState->getRawParameterValue("syncedWindowSize");
     feedback = ValueTreeState->getRawParameterValue("feedback");
     dryWet = ValueTreeState->getRawParameterValue("dryWet");
+    tempoSync = ValueTreeState->getRawParameterValue("tempoSync");
 }
 
 AwesomePartyAudioProcessor::~AwesomePartyAudioProcessor()
@@ -97,7 +99,9 @@ void AwesomePartyAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void AwesomePartyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    
     reverseDelay.prepareToPlay(sampleRate);
+    tempoSyncReverseDelay.prepareToPlay(sampleRate, playhead.bpm);
 }
 
 void AwesomePartyAudioProcessor::releaseResources()
@@ -135,8 +139,11 @@ bool AwesomePartyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 void AwesomePartyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     reverseDelay.setParameters(*windowSize, *feedback, *dryWet);
+    tempoSyncReverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
     
-    reverseDelay.processBlock(buffer);
+    reverseDelay.processBlock(buffer, playhead.isPlaying);
+    
+    
 }
 
 //==============================================================================
@@ -178,9 +185,16 @@ void AwesomePartyAudioProcessor::_constructValueTreeState(){
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.1f,1.0f,0.01f), 0.5f),
         
         //
+        //NEED TO MAKE THIS WORK
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("syncedWindowSize", 1), "Synced_Window_Size", juce::NormalisableRange<float>(1,4,1), 2),
+        
+        //
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("feedback", 1), "Feedback", juce::NormalisableRange<float>(0.f,1.0f,0.01f), 0.5f),
         
         //
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("dryWet", 1), "Dry_Wet", juce::NormalisableRange<float>(0.f,1.0f,0.01f), 0.5f)
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("dryWet", 1), "Dry_Wet", juce::NormalisableRange<float>(0.f,1.0f,0.01f), 0.5f),
+        
+        //
+        std::make_unique<juce::AudioParameterBool>(juce::ParameterID("tempoSync", 1), "tempoSync", true)
     }));
 }
