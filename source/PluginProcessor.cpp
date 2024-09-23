@@ -138,10 +138,22 @@ bool AwesomePartyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 
 void AwesomePartyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    //============================================================
+    // what is happening here:
+    // When testing the temposync: starts to work. then doesn't
+    // can't swap between the two.
+    // the UI is not swapping between the two.
+    //============================================================
+    
     reverseDelay.setParameters(*windowSize, *feedback, *dryWet);
     tempoSyncReverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
+    if(*tempoSync == 1){
+        tempoSyncReverseDelay.processBlock(buffer, playhead.isPlaying, playhead.timeInSamples);
+    }else{
+        reverseDelay.processBlock(buffer);
+        //std::cout <<*tempoSync;
+    }
     
-    reverseDelay.processBlock(buffer, playhead.isPlaying);
     
     
 }

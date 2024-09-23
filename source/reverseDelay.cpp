@@ -25,11 +25,17 @@ void reverseDelay::prepareToPlay(float inSampleRate){
     
     sampleRate = inSampleRate;
     circularBuffer.setSize(2, inSampleRate * 4);
+    circularBuffer.clear();
+    
+//    samples_per_beat = 60/bpm * inSampleRate;
+//    
+//    windowSizes(inSampleRate, bpm);
     
     smoothedFeedback.reset(inSampleRate, 0.01f);
     smoothedWindowSize.reset(inSampleRate, 0.001f);
     smoothedDryWet.reset(0.01f);
     smoothedVolumeRamp.reset(0.001f);
+    smoothedSyncedWindowSize.reset(0.1f);
     
 }
 
@@ -43,9 +49,7 @@ float reverseDelay::hannWindow(int sizeInSamples, int currentSample){
 
 }
 
-void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying){
-    
-    
+void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer){
     int num_samples = inBuffer.getNumSamples();
     // not sure if using the circular buffer instead of in buffer will work but oh well
     //int num_samples = circularBuffer.getNumSamples();
@@ -153,15 +157,35 @@ void reverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlayi
         }
         
     }
-    
 }
 
-void reverseDelay::setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent, bool timeSync){
+
+// =========================
+//void reverseDelay::windowSizes(float inSampleRate, double bpm){
+//    
+//    quarterNoteWindow = samples_per_beat;
+//    eighthNoteWindow = quarterNoteWindow/2;
+//    sixteenthNoteWindow = eighthNoteWindow/2;
+//    halfNoteWindow = quarterNoteWindow * 2;
+//    
+//    // this is hard coded for the array size
+//    // very bad do not do this ever
+//    // fix later
+//    syncedTimes[0] = halfNoteWindow;
+//    syncedTimes[1] = quarterNoteWindow;
+//    syncedTimes[2] = eighthNoteWindow;
+//    syncedTimes[3] = sixteenthNoteWindow;
+//}
+// =================================
+
+
+void reverseDelay::setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent){
     
     smoothedWindowSize.setTargetValue(inWindowSize);
     smoothedFeedback.setTargetValue(inFeedbackPercent);
     smoothedDryWet.setTargetValue(inDryWetPercent);
+//    smoothedSyncedWindowSize.setTargetValue(syncedTimes[inSyncedWindowSize-1]);
     
-    sync = timeSync;
+    //sync = timeSync;
     
 }

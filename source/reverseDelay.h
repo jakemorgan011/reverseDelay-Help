@@ -26,9 +26,11 @@ public:
     
     float hannWindow(int lengthInSamples, int currentSample);
     
-    void processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying);
+//    void windowSizes(float inSampleRate, double bpm);
     
-    void setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent, bool timeSync);
+    void processBlock(juce::AudioBuffer<float>& inBuffer);
+    
+    void setParameters(float inWindowSize, float inFeedbackPercent, float inDryWetPercent);
     
 private:
     // the notorius CB
@@ -53,12 +55,24 @@ private:
     int windowCounter = 0;
     bool windowComplete = false;
     
+    
+    int current_pos_in_samples = 0;
+    int samples_per_beat = 0;
+    int quarterNoteWindow = 0;
+    int halfNoteWindow = 0;
+    int eighthNoteWindow = 0;
+    int sixteenthNoteWindow = 0;
+    
+    int syncedTimes[4];
+    
     bool sync = false;
+    bool swap = false;
     
     //trouble shoot a window size till it works
     const int maxWindowSize = sampleRate / 1.5;
     
     juce::LinearSmoothedValue<float> smoothedWindowSize;
+    juce::LinearSmoothedValue<int> smoothedSyncedWindowSize;
     juce::LinearSmoothedValue<float> smoothedFeedback;
     juce::LinearSmoothedValue<float> smoothedDryWet;
     juce::LinearSmoothedValue<float> smoothedVolumeRamp;

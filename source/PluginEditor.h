@@ -20,6 +20,8 @@ class AwesomePartyAudioProcessorEditor  : public juce::AudioProcessorEditor
 public:
     AwesomePartyAudioProcessorEditor (AwesomePartyAudioProcessor&);
     ~AwesomePartyAudioProcessorEditor() override;
+    
+//    void _updateTempoSync();
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -50,6 +52,8 @@ private:
     
     
     void _updateTempoSync();
+    
+    void _buttonWasPressed();
     
     //maybe add more parameters later
     

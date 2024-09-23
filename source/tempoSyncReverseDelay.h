@@ -27,7 +27,7 @@ public:
     
     float hannWindow(int lengthInSamples, int currentSample);
     
-    void processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying);
+    void processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying, juce::int64 currentSamplePos);
     
     void setParameters(int inSyncedWindowSize, float inFeedbackPercent, float inDryWetPercent);
     
