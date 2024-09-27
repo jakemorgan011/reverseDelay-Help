@@ -145,6 +145,8 @@ void AwesomePartyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the UI is not swapping between the two.
     //============================================================
     
+    //std::cout <<*tempoSync;
+    
     reverseDelay.setParameters(*windowSize, *feedback, *dryWet);
     tempoSyncReverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
     if(*tempoSync == 1){
@@ -209,4 +211,12 @@ void AwesomePartyAudioProcessor::_constructValueTreeState(){
         //
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID("tempoSync", 1), "tempoSync", true)
     }));
+}
+
+int AwesomePartyAudioProcessor::_returnButtonState(){
+    auto atomicButtonState = ValueTreeState->getRawParameterValue("tempoSync");
+    
+    int integerButtonState = juce::roundToInt(atomicButtonState->load());
+    
+    return integerButtonState;
 }

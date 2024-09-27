@@ -54,12 +54,21 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     dryWetSliderAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.getVTS(),"dryWet",dryWetSlider));
     
     //
-    tempoSyncButton.setToggleable(true);
-    tempoSyncButton.setButtonText("tempoSync");
-    tempoSyncButton.setColour(0, juce::Colours::black);
-    tempoSyncButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(audioProcessor.getVTS(), "tempoSync", tempoSyncButton));
-    addAndMakeVisible(tempoSyncButton);
+//    tempoSyncButton.setToggleable(true);
+//    tempoSyncButton.setButtonText("tempoSync");
+//    tempoSyncButton.setColour(0, juce::Colours::black);
+//    tempoSyncButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(audioProcessor.getVTS(), "tempoSync", tempoSyncButton));
+//    addAndMakeVisible(tempoSyncButton);
+    syncButton.reset(new juce::TextButton("tempoSync"));
+    syncButton->onClick = [this](){
+        _updateTempoSync();
+    };
+    syncButton->setClickingTogglesState(true);
+    addAndMakeVisible(syncButton.get());
+    
+    syncButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(audioProcessor.getVTS(),"tempoSync", *syncButton.get()));
     _updateTempoSync();
+    _updateWindow();
     
     
 
@@ -84,17 +93,29 @@ void AwesomePartyAudioProcessorEditor::resized()
     feedbackSlider.setBounds(100, 0, 80, 80);
     dryWetSlider.setBounds(200, 0, 80, 80);
     tempoSyncButton.setBounds(100,100,100,100);
+    syncButton->setBounds(125,150,75,50);
 }
 
 void AwesomePartyAudioProcessorEditor::_updateTempoSync(){
+
+    int stateFixed = audioProcessor._returnButtonState();
     
-    if(tempoSyncButton.getToggleState()){
+    if(stateFixed == 1){
         windowSizeSliderAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.getVTS(),"syncedWindowSize",windowSizeSlider));
+        
+        
+        // reset the dial because the memory is the only thing being reset
     }else{
         windowSizeSliderAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.getVTS(),"windowSize",windowSizeSlider));
     }
     
 }
 
-void AwesomePartyAudioProcessorEditor::_buttonWasPressed(){
+
+void AwesomePartyAudioProcessorEditor::_updateWindow(){
+    
+    AwesomePartyAudioProcessorEditor::repaint();
+    windowSizeSlider.repaint();
+    
+    
 }

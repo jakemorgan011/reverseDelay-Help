@@ -60,6 +60,7 @@ public:
     juce::AudioProcessorValueTreeState& getVTS(){
         return *ValueTreeState;
     }
+    int _returnButtonState();
 
 private:
     

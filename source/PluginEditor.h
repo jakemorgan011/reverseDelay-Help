@@ -51,9 +51,13 @@ private:
     juce::Image background;
     
     
+    // trying it this way
+    std::unique_ptr<juce::TextButton> syncButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> syncButtonAttachment;
+    
     void _updateTempoSync();
     
-    void _buttonWasPressed();
+    void _updateWindow();
     
     //maybe add more parameters later
     
