@@ -14,7 +14,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     
-    //setLookAndFeel(&customLookAndfeel);
+    setLookAndFeel(&customLookAndfeel);
     
     //
 //    if(tempoSyncButton.getState() == true){
@@ -72,28 +72,28 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     
     
 
-    setSize (300, 200);
+    setSize (300, 300);
 }
 
 AwesomePartyAudioProcessorEditor::~AwesomePartyAudioProcessorEditor()
 {
-    //setLookAndFeel(nullptr);
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================
 void AwesomePartyAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    background = juce::ImageCache::getFromMemory(BinaryData::frutigerScape_png,BinaryData::frutigerScape_pngSize);
+    background = juce::ImageCache::getFromMemory(BinaryData::background_png,BinaryData::background_pngSize);
         g.drawImageWithin(background, 0, 0, getWidth(), getHeight(), juce::RectanglePlacement::stretchToFit);
 }
 
 void AwesomePartyAudioProcessorEditor::resized()
 {
-    windowSizeSlider.setBounds(0, 0, 80, 80);
-    feedbackSlider.setBounds(100, 0, 80, 80);
-    dryWetSlider.setBounds(200, 0, 80, 80);
+    windowSizeSlider.setBounds(0, 50, 100, 100);
+    feedbackSlider.setBounds(100, 50, 100, 100);
+    dryWetSlider.setBounds(200, 50, 100, 100);
     tempoSyncButton.setBounds(100,100,100,100);
-    syncButton->setBounds(125,150,75,50);
+    syncButton->setBounds(200,250,25,25);
 }
 
 void AwesomePartyAudioProcessorEditor::_updateTempoSync(){
