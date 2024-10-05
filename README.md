@@ -1,20 +1,21 @@
 # reverseDelay-Help
-a working reverse delay dsp.
+a "working" reverse delay dsp.
 
-recent additions:
+# recent additions:
 - time sync added
 - hanning window added to playback as a alternative to iterpolation
+- new UI.
+- better knobs
+- timesync button (synced with bpm from daw but not the playhead yet.)
 
-problems:
-  - DAW clock sync is officially working.
-  - however, I need to link with the playhead a little better
-  - AND the temposync button is not updating in real time with the plugin.
-  - UI is using default assets.
+# problems:
+- The buffer seems to fill up and start to clip when it is swapped to tempoSync.
+- the temposyncReverseDelay cpp file is a mess rn. there are multiple algorithms that are commented out but the one that works at the moment is the one that is live in the code.
+- feedback seems to cut off at random while the buffer is filling up.
+- UI feels shaky.
+- knobs that don't have 100 values tend to stretch and break in the UI.
 
-OTHER than that, this dsp works. I haven't seen any simple reverse delays out in the wild so I hope this is found useful to someone. 
 
-socials/music:
+socials:
 @publicservices.web on IG
 ------------------
-SPOTIFY:
-https://open.spotify.com/artist/2g4B87GDfj1ZojWKSTqujd?si=BQ-C_LllR-GgaMLk4iFWOw
