@@ -15,6 +15,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
 {
     
     setLookAndFeel(&customLookAndfeel);
+
     
     //
 //    if(tempoSyncButton.getState() == true){
@@ -23,7 +24,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
 //    if(tempoSyncButton.getState() == false){
 //        windowSizeSlider.setRange(0.1, 1.0f);
 //    }
-    windowSizeSlider.setRange(0.1, 1.0f);
+    windowSizeSlider.setRange(0.01, 1.1f);
     //FIX
 //    windowSizeSlider.setRange(1,4);
 //    windowSizeSlider.set
@@ -40,14 +41,16 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     //add label later maybe
     
     //
-    feedbackSlider.setRange(0, 1.0f);
+    feedbackSlider.setRange(0.0, 1.0f);
+    feedbackSlider.setLookAndFeel(&otherLookAndFeel);
     feedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 20);
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     addAndMakeVisible(feedbackSlider);
     feedbackSliderAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.getVTS(),"feedback",feedbackSlider));
     
     //
-    dryWetSlider.setRange(0, 1.0f);
+    dryWetSlider.setRange(0.0, 1.0f);
+    dryWetSlider.setLookAndFeel(&blueLookAndFeel);
     dryWetSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 20);
     dryWetSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     addAndMakeVisible(dryWetSlider);
@@ -61,6 +64,9 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
 //    addAndMakeVisible(tempoSyncButton);
     syncButton.reset(new juce::TextButton("tempoSync"));
     syncButton->onClick = [this](){
+        //
+        // add update function for look and feel
+        //
         _updateTempoSync();
     };
     syncButton->setClickingTogglesState(true);

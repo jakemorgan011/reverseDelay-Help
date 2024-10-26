@@ -145,19 +145,36 @@ void AwesomePartyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the UI is not swapping between the two.
     //============================================================
     
+    float* inBufferL = buffer.getWritePointer(0);
+    float* inBufferR = buffer.getWritePointer(1);
+    
+    int num_samples = buffer.getNumSamples();
+    
     //std::cout <<*tempoSync;
     
     reverseDelay.setParameters(*windowSize, *feedback, *dryWet);
     tempoSyncReverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
     if(*tempoSync == 1){
+        if (checkSwap != *tempoSync) {
+            for(int i = 0; i<num_samples; i++){
+                inBufferL[i] = 0.f;
+                inBufferR[i] = 0.f;
+            }
+        }
         tempoSyncReverseDelay.processBlock(buffer, playhead.isPlaying, playhead.timeInSamples);
     }else{
+        if(checkSwap != *tempoSync){
+            for(int i = 0; i< num_samples; i++){
+                inBufferL[i] = 0.f;
+                inBufferR[i] = 0.f;
+            }
+        }
         reverseDelay.processBlock(buffer);
         //std::cout <<*tempoSync;
     }
     
     
-    
+    checkSwap = *tempoSync;
 }
 
 //==============================================================================
@@ -196,7 +213,7 @@ void AwesomePartyAudioProcessor::_constructValueTreeState(){
     ValueTreeState.reset(new juce::AudioProcessorValueTreeState(*this, nullptr,juce::Identifier("reverseDelay"),{
         
         //
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.1f,1.0f,0.01f), 0.5f),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.01f,1.1f,0.01f), 0.5f),
         
         //
         //NEED TO MAKE THIS WORK

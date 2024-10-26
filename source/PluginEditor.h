@@ -11,6 +11,8 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "lookAndFeel.h"
+#include "otherLookAndFeel.h"
+#include "blueLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -30,6 +32,8 @@ public:
 private:
     //custom look and feel
     customLookAndFeel customLookAndfeel;
+    otherLookAndFeel otherLookAndFeel;
+    blueLookAndFeel blueLookAndFeel;
     
     //button
     juce::ToggleButton tempoSyncButton;
