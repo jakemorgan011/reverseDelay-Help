@@ -213,7 +213,7 @@ void AwesomePartyAudioProcessor::_constructValueTreeState(){
     ValueTreeState.reset(new juce::AudioProcessorValueTreeState(*this, nullptr,juce::Identifier("reverseDelay"),{
         
         //
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.01f,1.1f,0.01f), 0.5f),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.1f,1.1f,0.01f), 0.5f),
         
         //
         //NEED TO MAKE THIS WORK

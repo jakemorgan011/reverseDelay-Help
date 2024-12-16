@@ -24,7 +24,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
 //    if(tempoSyncButton.getState() == false){
 //        windowSizeSlider.setRange(0.1, 1.0f);
 //    }
-    windowSizeSlider.setRange(0.01, 1.1f);
+    windowSizeSlider.setRange(0.1, 1.f);
     //FIX
 //    windowSizeSlider.setRange(1,4);
 //    windowSizeSlider.set
@@ -42,7 +42,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     
     //
     feedbackSlider.setRange(0.0, 1.0f);
-    feedbackSlider.setLookAndFeel(&otherLookAndFeel);
+    //feedbackSlider.setLookAndFeel(&otherLookAndFeel);
     feedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 20);
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     addAndMakeVisible(feedbackSlider);
@@ -50,7 +50,7 @@ AwesomePartyAudioProcessorEditor::AwesomePartyAudioProcessorEditor (AwesomeParty
     
     //
     dryWetSlider.setRange(0.0, 1.0f);
-    dryWetSlider.setLookAndFeel(&blueLookAndFeel);
+    //dryWetSlider.setLookAndFeel(&blueLookAndFeel);
     dryWetSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 20);
     dryWetSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     addAndMakeVisible(dryWetSlider);

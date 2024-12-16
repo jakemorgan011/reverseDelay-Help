@@ -31,6 +31,8 @@ public:
     
     void setParameters(int inSyncedWindowSize, float inFeedbackPercent, float inDryWetPercent);
     
+    juce::int64 calculateModulo(juce::int64 currentSamplePos, double bpm);
+    
 private:
     // the notorius CB
     juce::AudioBuffer<float> circularBuffer;
@@ -63,6 +65,8 @@ private:
     int windowCounter = 0;
     bool windowComplete = false;
     
+    int syncnum = 0;
+    
     //trouble shoot a window size till it works
     //const int maxWindowSize = sampleRate / 1.5;
     
@@ -70,4 +74,6 @@ private:
     juce::LinearSmoothedValue<float> smoothedFeedback;
     juce::LinearSmoothedValue<float> smoothedDryWet;
     juce::LinearSmoothedValue<float> smoothedVolumeRamp;
+    
+    juce::LinearSmoothedValue<double> smoothedBPM;
 };

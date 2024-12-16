@@ -42,6 +42,12 @@
 // we can now modify the sample(variable) without calling it actively.
 // we grab the address and basically change the address's value so that the variable is changed remotely
 //
+// -----------------------------------------------------------
+//
+// notes from HALLOWEEN:
+// okay so i added a modulo function to calculate basically what eighth note we are on.
+// the function needs to dynamically change between each window size.
+//
 //=====================================
 
 tempoSyncReverseDelay::tempoSyncReverseDelay(){
@@ -67,6 +73,7 @@ void tempoSyncReverseDelay::prepareToPlay(float inSampleRate, double bpm){
     smoothedFeedback.reset(0.01f);
     smoothedDryWet.reset(0.01f);
     smoothedSyncedWindowSize.reset(0.1f);
+    smoothedBPM.reset(0.01f);
     
 }
 
@@ -99,6 +106,8 @@ float tempoSyncReverseDelay::hannWindow(int sizeInSamples, int currentSample){
 
 void tempoSyncReverseDelay::processBlock(juce::AudioBuffer<float>& inBuffer, bool isPlaying, juce::int64 currentSamplePos){
     
+    
+    calculateModulo(currentSamplePos, smoothedBPM.getNextValue());
     
     int num_samples = inBuffer.getNumSamples();
     
@@ -219,5 +228,15 @@ void tempoSyncReverseDelay::setParameters(int inSyncedWindowSize, float inFeedba
     smoothedFeedback.setTargetValue(inFeedbackPercent);
     smoothedDryWet.setTargetValue(inDryWetPercent);
     
+    syncnum = inSyncedWindowSize;
+    
+}
+
+juce::int64 tempoSyncReverseDelay::calculateModulo(juce::int64 currentSamplePos, double bpm){
+    // in my head
+    // this should return a value 0-3
+    int calculatedWindowPosition = currentSamplePos % quarterNoteWindow;
+    DBG(calculatedWindowPosition);
+    return calculatedWindowPosition;
 }
 
