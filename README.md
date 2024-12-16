@@ -12,8 +12,6 @@ a "working" reverse delay dsp.
 - The buffer seems to fill up and start to clip when it is swapped to tempoSync.
 - the temposyncReverseDelay cpp file is a mess rn. there are multiple algorithms that are commented out but the one that works at the moment is the one that is live in the code.
 - feedback seems to cut off at random while the buffer is filling up.
-- UI feels shaky.
-- knobs that don't have 100 values tend to stretch and break in the UI.
 
 
 socials:
