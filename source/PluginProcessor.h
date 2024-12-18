@@ -9,19 +9,17 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "reverseDelay.h"
-#include "tempoSyncReverseDelay.h"
-
+#include "tempo_sync_reverse.h"
 
 //==============================================================================
 /**
 */
-class AwesomePartyAudioProcessor  : public juce::AudioProcessor
+class Static_revAudioProcessor  : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    AwesomePartyAudioProcessor();
-    ~AwesomePartyAudioProcessor() override;
+    Static_revAudioProcessor();
+    ~Static_revAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -55,25 +53,19 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
-    // make the VTS activate and expose to the procesor
     juce::AudioProcessorValueTreeState& getVTS(){
         return *ValueTreeState;
     }
-    int _returnButtonState();
 
 private:
     
-    reverseDelay reverseDelay;
-    tempoSyncReverseDelay tempoSyncReverseDelay;
+    tempo_sync_delay reverseDelay;
     
     juce::AudioPlayHead::CurrentPositionInfo playhead;
     
-    std::atomic<float>* windowSize = nullptr;
     std::atomic<float>* syncedWindowSize = nullptr;
     std::atomic<float>* feedback = nullptr;
     std::atomic<float>* dryWet = nullptr;
-    std::atomic<float>* tempoSync = nullptr;
     
     juce::LinearSmoothedValue<float> smoothedWindowSize;
     juce::LinearSmoothedValue<float> smoothedFeedback;
@@ -81,9 +73,7 @@ private:
     
     std::unique_ptr<juce::AudioProcessorValueTreeState> ValueTreeState;
     
-    float checkSwap;
-    
     void _constructValueTreeState();
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AwesomePartyAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Static_revAudioProcessor)
 };

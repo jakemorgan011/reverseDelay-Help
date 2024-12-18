@@ -10,63 +10,39 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "lookAndFeel.h"
-#include "otherLookAndFeel.h"
-#include "blueLookAndFeel.h"
+#include "customLookAndFeel.h"
 
 //==============================================================================
 /**
 */
-class AwesomePartyAudioProcessorEditor  : public juce::AudioProcessorEditor
+class Static_revAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    AwesomePartyAudioProcessorEditor (AwesomePartyAudioProcessor&);
-    ~AwesomePartyAudioProcessorEditor() override;
-    
-//    void _updateTempoSync();
+    Static_revAudioProcessorEditor (Static_revAudioProcessor&);
+    ~Static_revAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    //custom look and feel
-    customLookAndFeel customLookAndfeel;
-    otherLookAndFeel otherLookAndFeel;
-    blueLookAndFeel blueLookAndFeel;
     
-    //button
-    juce::ToggleButton tempoSyncButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> tempoSyncButtonAttachment;
+    customLookAndFeel customLookAndFeel;
     
-    //slider
-    //
     juce::Slider windowSizeSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> windowSizeSliderAttachment;
     
-    //
     juce::Slider feedbackSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> feedbackSliderAttachment;
     
-    //
     juce::Slider dryWetSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetSliderAttachment;
     
     juce::Image background;
     
-    
-    // trying it this way
-    std::unique_ptr<juce::TextButton> syncButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> syncButtonAttachment;
-    
-    void _updateTempoSync();
-    
-    void _updateWindow();
-    
-    //maybe add more parameters later
-    
-    
-    AwesomePartyAudioProcessor& audioProcessor;
+    // This reference is provided as a quick way for your editor to
+    // access the processor object that created it.
+    Static_revAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AwesomePartyAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Static_revAudioProcessorEditor)
 };

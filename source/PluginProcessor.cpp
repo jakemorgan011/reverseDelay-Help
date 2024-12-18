@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-AwesomePartyAudioProcessor::AwesomePartyAudioProcessor()
+Static_revAudioProcessor::Static_revAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -23,24 +23,22 @@ AwesomePartyAudioProcessor::AwesomePartyAudioProcessor()
 #endif
 {
     _constructValueTreeState();
-    windowSize = ValueTreeState->getRawParameterValue("windowSize");
     syncedWindowSize = ValueTreeState->getRawParameterValue("syncedWindowSize");
     feedback = ValueTreeState->getRawParameterValue("feedback");
     dryWet = ValueTreeState->getRawParameterValue("dryWet");
-    tempoSync = ValueTreeState->getRawParameterValue("tempoSync");
 }
 
-AwesomePartyAudioProcessor::~AwesomePartyAudioProcessor()
+Static_revAudioProcessor::~Static_revAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String AwesomePartyAudioProcessor::getName() const
+const juce::String Static_revAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool AwesomePartyAudioProcessor::acceptsMidi() const
+bool Static_revAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -49,7 +47,7 @@ bool AwesomePartyAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool AwesomePartyAudioProcessor::producesMidi() const
+bool Static_revAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -58,7 +56,7 @@ bool AwesomePartyAudioProcessor::producesMidi() const
    #endif
 }
 
-bool AwesomePartyAudioProcessor::isMidiEffect() const
+bool Static_revAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -67,51 +65,48 @@ bool AwesomePartyAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double AwesomePartyAudioProcessor::getTailLengthSeconds() const
+double Static_revAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int AwesomePartyAudioProcessor::getNumPrograms()
+int Static_revAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int AwesomePartyAudioProcessor::getCurrentProgram()
+int Static_revAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void AwesomePartyAudioProcessor::setCurrentProgram (int index)
+void Static_revAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String AwesomePartyAudioProcessor::getProgramName (int index)
+const juce::String Static_revAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void AwesomePartyAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void Static_revAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void AwesomePartyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void Static_revAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    
-    reverseDelay.prepareToPlay(sampleRate);
-    tempoSyncReverseDelay.prepareToPlay(sampleRate, playhead.bpm);
+    reverseDelay.prepareToPlay(sampleRate, playhead.bpm);
 }
 
-void AwesomePartyAudioProcessor::releaseResources()
+void Static_revAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    // maybe use this for stopping the loop.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool AwesomePartyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool Static_revAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -136,67 +131,32 @@ bool AwesomePartyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 }
 #endif
 
-void AwesomePartyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void Static_revAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    //============================================================
-    // what is happening here:
-    // When testing the temposync: starts to work. then doesn't
-    // can't swap between the two.
-    // the UI is not swapping between the two.
-    //============================================================
-    
-    float* inBufferL = buffer.getWritePointer(0);
-    float* inBufferR = buffer.getWritePointer(1);
-    
-    int num_samples = buffer.getNumSamples();
-    
-    //std::cout <<*tempoSync;
-    
-    reverseDelay.setParameters(*windowSize, *feedback, *dryWet);
-    tempoSyncReverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
-    if(*tempoSync == 1){
-        if (checkSwap != *tempoSync) {
-            for(int i = 0; i<num_samples; i++){
-                inBufferL[i] = 0.f;
-                inBufferR[i] = 0.f;
-            }
-        }
-        tempoSyncReverseDelay.processBlock(buffer, playhead.isPlaying, playhead.timeInSamples);
-    }else{
-        if(checkSwap != *tempoSync){
-            for(int i = 0; i< num_samples; i++){
-                inBufferL[i] = 0.f;
-                inBufferR[i] = 0.f;
-            }
-        }
-        reverseDelay.processBlock(buffer);
-        //std::cout <<*tempoSync;
-    }
-    
-    
-    checkSwap = *tempoSync;
+    reverseDelay.processBlock(buffer, playhead.isPlaying, playhead.timeInSamples);
+    reverseDelay.setParameters(*syncedWindowSize, *feedback, *dryWet);
 }
 
 //==============================================================================
-bool AwesomePartyAudioProcessor::hasEditor() const
+bool Static_revAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* AwesomePartyAudioProcessor::createEditor()
+juce::AudioProcessorEditor* Static_revAudioProcessor::createEditor()
 {
-    return new AwesomePartyAudioProcessorEditor (*this);
+    return new Static_revAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void AwesomePartyAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void Static_revAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = ValueTreeState->copyState();
     std::unique_ptr<juce::XmlElement>xml(state.createXml());
-    copyXmlToBinary (*xml, destData);
+    copyXmlToBinary(*xml, destData);
 }
 
-void AwesomePartyAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void Static_revAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
     ValueTreeState->replaceState(juce::ValueTree::fromXml(*xmlState));
@@ -206,15 +166,11 @@ void AwesomePartyAudioProcessor::setStateInformation (const void* data, int size
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new AwesomePartyAudioProcessor();
+    return new Static_revAudioProcessor();
 }
 
-void AwesomePartyAudioProcessor::_constructValueTreeState(){
+void Static_revAudioProcessor::_constructValueTreeState(){
     ValueTreeState.reset(new juce::AudioProcessorValueTreeState(*this, nullptr,juce::Identifier("reverseDelay"),{
-        
-        //
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("windowSize", 1), "Window_Size", juce::NormalisableRange<float>(0.1f,1.1f,0.01f), 0.5f),
-        
         //
         //NEED TO MAKE THIS WORK
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("syncedWindowSize", 1), "Synced_Window_Size", juce::NormalisableRange<float>(1,4,1), 2),
@@ -224,16 +180,5 @@ void AwesomePartyAudioProcessor::_constructValueTreeState(){
         
         //
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("dryWet", 1), "Dry_Wet", juce::NormalisableRange<float>(0.f,1.0f,0.01f), 0.5f),
-        
-        //
-        std::make_unique<juce::AudioParameterBool>(juce::ParameterID("tempoSync", 1), "tempoSync", true)
     }));
-}
-
-int AwesomePartyAudioProcessor::_returnButtonState(){
-    auto atomicButtonState = ValueTreeState->getRawParameterValue("tempoSync");
-    
-    int integerButtonState = juce::roundToInt(atomicButtonState->load());
-    
-    return integerButtonState;
 }
